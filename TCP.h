@@ -14,19 +14,19 @@
 unsigned int convertTabtoInt(int[], int);
 
 typedef struct {
-	
-    unsigned int src_port;
-    unsigned int dest_port;
-    unsigned int seq_num;
-    unsigned int ack;
-    unsigned int data_offset;
-    unsigned int reserved;
-    unsigned int window;
-    unsigned int checksum;
-    unsigned int urgent;
-    unsigned int option;
-    unsigned int padding;
-    int data;
+  uint16_t src_port;
+  uint16_t dst_port;
+  uint32_t seq;
+  uint32_t ack;
+  uint8_t  data_offset;  // 4 bits
+  uint8_t  flags;
+  uint16_t window_size;
+  uint16_t checksum;
+  uint16_t urgent_p;
+  uint16_t option;
+  uint16_t padding;
+
+  uint32_t data;
 } header;
 
 unsigned int IntToBinary(int i){

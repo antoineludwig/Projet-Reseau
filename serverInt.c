@@ -61,16 +61,16 @@ int main(int argc, char* argv[]){
             printf("connexion de %s, port %d\n",adresseIP,port);
         //test reception
             pid=fork();
-            int number;
+            header h;
             int rec=0;
             if(pid==0){
-                rec=recv(idSockCli,&number,sizeof(int),0);
+                rec=recv(idSockCli,&h,sizeof(header),0);
 
                 if(rec<0){
                     printf("err=%d\n",rec);
                 }
                 else{
-                    printf("number=%d\n",number);
+                    printf("number=%d\n",h.data);
 
                 }
                 printf("Erreur : %s\n",strerror(errno));
@@ -83,7 +83,7 @@ int main(int argc, char* argv[]){
             }
         //fin du test
 
-//envoi de la structure complète (pas champ par champ)
+        //envoi de la structure complète (pas champ par champ)
         int taille_envoi = sizeof(header);
 
         printf("Envoi d'un message de taille %d\n",taille_envoi);
