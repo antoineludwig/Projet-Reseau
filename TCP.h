@@ -10,25 +10,27 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
-long convertTabtoInt(int[], int);
+
+unsigned int convertTabtoInt(int[], int);
+
 typedef struct {
 	
-    long src_port;
-    long dest_port;
-    long seq_num;
-    long ack;
-    long data_offset;
-    long reserved;
-    long window;
-    long checksum;
-    long urgent;
-    long option;
-    long padding;
+    unsigned int src_port;
+    unsigned int dest_port;
+    unsigned int seq_num;
+    unsigned int ack;
+    unsigned int data_offset;
+    unsigned int reserved;
+    unsigned int window;
+    unsigned int checksum;
+    unsigned int urgent;
+    unsigned int option;
+    unsigned int padding;
     char* data;
 } header;
 
-long IntToBinary(int i){
-    long result = 0;
+unsigned int IntToBinary(int i){
+    unsigned int result = 0;
     int j=0;
     while(i>0)
     {
@@ -39,7 +41,7 @@ long IntToBinary(int i){
     return result;
 }
 
-int BinaryToInt(long n){
+int BinaryToInt(unsigned int n){
 	int decimal=0, i=0, rem;
 	while (n!=0)
    	{
@@ -60,7 +62,33 @@ char* convertTabtoString(char tab[], int taille){
     return result;
 }
 
+char* completebinary(int taille, unsigned int binary){
+    char* result = (char*)malloc(sizeof(char)*taille);
+    int i;
+    int tailleReel = sizeInt(binary);
+    int tailleRestante = taille - tailleReel;
+
+    for(i = taille-1 ; i >= tailleRestante ; i--){
+        result[i] = ((binary %10)+48);
+        binary /= 10;
+    }
+
+    for(i = tailleRestante-1 ; i >= 0 ; i--){
+        result[i] = '0';
+     }
+    printf("%s\n", result);
+    return result;
+}
+
 char* convertHeaderToBuffer(header h, int tailleBuffer){
-    //TODO convert header to String
+    char* stringHeader = (char*)malloc(sizeof(char)*(6*32 + ));
     return "";
+}
+int sizeInt(int nombre){
+    int taille = 0;
+    while(nombre > 0){
+        taille++;
+        nombre /= 10;
+    }
+    return taille;
 }
