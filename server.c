@@ -88,7 +88,7 @@ int main(int argc, char* argv[]){
 		printf("Envoi de la taille du message au serveur\n");
         send(idSockCli,&taille_envoi,taille_envoi,0);
 
-        if(send(idSockCli, &header, sizeof(header), 0) == -1)
+        if(send(idSockCli, header, sizeof(header), 0) == -1)
         {
             perror("send()");
             exit(EXIT_FAILURE);

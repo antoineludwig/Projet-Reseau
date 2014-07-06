@@ -13,7 +13,7 @@
 
 int convertTabtoInt(int[] , int );
 char* convertTabtoString(char[], int );
-
+char* convertHeaderToBuffer(header , int );
 typedef struct {
 	
     int src_port;
@@ -70,4 +70,9 @@ char* convertTabtoString(char tab[], int taille){
         result[i] = tab[i];
     }
     return result;
+}
+
+char* convertHeaderToBuffer(header h, int tailleBuffer){
+    //TODO convert header to String
+    return "";
 }

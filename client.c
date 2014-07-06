@@ -66,7 +66,7 @@ int main(int argc, char* argv[]){
 	//construction du header TCP
 		//data à envoyer
 		char data[7];
-		sprintf(cou,"coucou\0");
+        sprintf(data,"coucou\0");
         header h;
         h.src_port=IntToBinary(ntohs(saddrCli.sin_port));
         h.dest_port=IntToBinary(htons(atoi(argv[2])));
@@ -88,6 +88,7 @@ int main(int argc, char* argv[]){
 		h.padding=IntToBinary(0);
         h.data=convertTabtoString(data, 7);
 		//www.frameip.com/entete-tcp/
+        printf("Envoi au serveur : %s\n", data);
 		if(send(socketd, &h, sizeof(header), 0)<0)
 		{
 			perror("send()");
