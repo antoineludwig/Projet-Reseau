@@ -10,39 +10,36 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <math.h>
-
-int convertTabtoInt(int[] , int );
-char* convertTabtoString(char[], int );
-char* convertHeaderToBuffer(header , int );
+long convertTabtoInt(int[], int);
 typedef struct {
 	
-    int src_port;
-    int dest_port;
-    int seq_num;
-	int ack;
-	int data_offset;
-	int reserved;
-	int window;
-	int checksum;
-	int urgent;
-	int option;
-	int padding;
+    long src_port;
+    long dest_port;
+    long seq_num;
+    long ack;
+    long data_offset;
+    long reserved;
+    long window;
+    long checksum;
+    long urgent;
+    long option;
+    long padding;
     char* data;
 } header;
 
-int IntToBinary(int i){
-    int a[20];
-	int j=0;
+long IntToBinary(int i){
+    long result = 0;
+    int j=0;
     while(i>0)
     {
-		a[j]=i%2; 
+        result = result * 10 + i%2;
 		j++; 
-		i=i/2;
+        i=i/2;
     }
-    return convertTabtoInt(a, 20);
+    return result;
 }
 
-int BinaryToInt(int n){
+int BinaryToInt(long n){
 	int decimal=0, i=0, rem;
 	while (n!=0)
    	{
@@ -52,15 +49,6 @@ int BinaryToInt(int n){
         ++i;
     }
     return decimal;
-}
-
-int convertTabtoInt(int tab[], int taille){
-    int result = 0, i;
-    for(i = taille-1 ; i >= 0 ; i--){
-        result *= 10;
-        result += tab[i];
-    }
-    return result;
 }
 
 char* convertTabtoString(char tab[], int taille){

@@ -55,11 +55,11 @@ int main(int argc, char* argv[]){
 		}
 
 	//test envoie de données
-		char cou[7];
+        /*char cou[7];
 		int b=42;
 		if(send(socketd,&b,sizeof(int),0)<0){
 			printf("errorcli\n");
-		}
+        }*/
 /*		sprintf(cou,"coucou\0");
 		send(socketd,&cou,7*sizeof(char),0);*/
 	//fin du test
@@ -67,6 +67,7 @@ int main(int argc, char* argv[]){
 		//data à envoyer
 		char data[7];
         sprintf(data,"coucou\0");
+        printf("Start header\n");
         header h;
         h.src_port=IntToBinary(ntohs(saddrCli.sin_port));
         h.dest_port=IntToBinary(htons(atoi(argv[2])));
@@ -89,6 +90,7 @@ int main(int argc, char* argv[]){
         h.data=convertTabtoString(data, 7);
 		//www.frameip.com/entete-tcp/
         printf("Envoi au serveur : %s\n", data);
+        convertHeaderToBuffer(h, 1024);
 		if(send(socketd, &h, sizeof(header), 0)<0)
 		{
 			perror("send()");
