@@ -1,4 +1,3 @@
-gcc -lm client.c
-mv a.out client.out
+gcc -lm -o client.out client.c
 ./client.out 127.0.0.1 12345
 

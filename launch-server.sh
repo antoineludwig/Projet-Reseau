@@ -1,4 +1,3 @@
-gcc -lm server.c
-mv a.out server.out
+gcc -lm -o server.out server.c
 ./server.out 12345
 
