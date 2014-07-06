@@ -87,7 +87,15 @@ int main(int argc, char* argv[]){
 
 		printf("Envoi de la taille du message au serveur\n");
         send(idSockCli,&taille_envoi,taille_envoi,0);
-        /*int retour = send(idSockCli,&header,taille_envoi,0);
+
+        if(send(idSockCli, &header, sizeof(header), 0) == -1)
+        {
+            perror("send()");
+            exit(EXIT_FAILURE);
+        }
+        //int retour = send(idSockCli,&header,taille_envoi,0);
+
+        /*
 		printf("Envoi du message\n");
 		//envoi sur la socket de la structure, avec un pointeur sur la struct définie et la taille de la structure (obtenue par 		le sizeof ligne 112)
         if(retour == -1)

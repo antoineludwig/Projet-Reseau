@@ -67,9 +67,9 @@ int main(int argc, char* argv[]){
 		//data à envoyer
 		char data[7];
 		sprintf(cou,"coucou\0");
-        header h;/*
-		h.src_port=IntToBinary(ntohs(saddrCli.sin_port));
-		h.dest_port=IntToBinary(htons(argv[2]));
+        header h;
+        h.src_port=IntToBinary(ntohs(saddrCli.sin_port));
+        h.dest_port=IntToBinary(htons(atoi(argv[2])));
 		//premiere valeur =0, à chaque echange ajouter la taille des données envoyés (1ko->numseq=numseq+1024) (utilisé sizeof)	
 		h.seq_num=IntToBinary(0);
 		//ack =numseq+1
@@ -86,9 +86,8 @@ int main(int argc, char* argv[]){
 		h.urgent=IntToBinary(0);
 		h.option=IntToBinary(0);
 		h.padding=IntToBinary(0);
-		h.data=data;
+        h.data=convertTabtoString(data, 7);
 		//www.frameip.com/entete-tcp/
-*/
 		if(send(socketd, &h, sizeof(header), 0)<0)
 		{
 			perror("send()");

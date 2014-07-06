@@ -11,11 +11,14 @@
 #include <unistd.h>
 #include <math.h>
 
+int convertTabtoInt(int[] , int );
+char* convertTabtoString(char[], int );
+
 typedef struct {
 	
-	int src_port;
-	int dest_port;
-	int seq_num;
+    int src_port;
+    int dest_port;
+    int seq_num;
 	int ack;
 	int data_offset;
 	int reserved;
@@ -24,11 +27,11 @@ typedef struct {
 	int urgent;
 	int option;
 	int padding;
-	int data;
+    char* data;
 } header;
 
-int* IntToBinary(int i){
-    int* a = (int*)malloc(sizeof(int)*20);
+int IntToBinary(int i){
+    int a[20];
 	int j=0;
     while(i>0)
     {
@@ -36,7 +39,7 @@ int* IntToBinary(int i){
 		j++; 
 		i=i/2;
     }
-    return a;
+    return convertTabtoInt(a, 20);
 }
 
 int BinaryToInt(int n){
@@ -49,4 +52,22 @@ int BinaryToInt(int n){
         ++i;
     }
     return decimal;
+}
+
+int convertTabtoInt(int tab[], int taille){
+    int result = 0, i;
+    for(i = taille-1 ; i >= 0 ; i--){
+        result *= 10;
+        result += tab[i];
+    }
+    return result;
+}
+
+char* convertTabtoString(char tab[], int taille){
+    char* result = (char*)malloc(sizeof(char)*taille);
+    int i;
+    for(i = 0 ; i < taille ; i++){
+        result[i] = tab[i];
+    }
+    return result;
 }
