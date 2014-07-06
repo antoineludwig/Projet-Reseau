@@ -55,16 +55,22 @@ int main(int argc, char* argv[]){
 		}
 
 	//test envoie de données
-        /*char cou[7];
-		int b=42;
-		if(send(socketd,&b,sizeof(int),0)<0){
-			printf("errorcli\n");
+        //char cou[7];
+       /* int b=42;
+        if(send(socketd,&b,sizeof(int),0)<0){
+            printf("errorcli\n");
         }*/
-/*		sprintf(cou,"coucou\0");
-		send(socketd,&cou,7*sizeof(char),0);*/
+        char* c= (char*)malloc(sizeof(char)*10);
+        sprintf(c, "TOTO\0");
+        if(send(socketd,&c,5*sizeof(char),0)<0){
+            printf("errorcli\n");
+        }
+        //sprintf(cou,"coucou\0");
+        //send(socketd,&cou,7*sizeof(char),0);
 	//fin du test
 	//construction du header TCP
 		//data à envoyer
+        /*
 		char data[7];
         sprintf(data,"coucou\0");
         printf("Start header\n");
@@ -95,7 +101,7 @@ int main(int argc, char* argv[]){
 		{
 			perror("send()");
 			exit(EXIT_FAILURE);
-		}
+        }*/
 		printf("Envoi de la requête terminé\n");
 
 		

@@ -26,7 +26,7 @@ typedef struct {
     unsigned int urgent;
     unsigned int option;
     unsigned int padding;
-    char* data;
+    int data;
 } header;
 
 unsigned int IntToBinary(int i){
@@ -81,7 +81,7 @@ char* completebinary(int taille, unsigned int binary){
 }
 
 char* convertHeaderToBuffer(header h, int tailleBuffer){
-    char* stringHeader = (char*)malloc(sizeof(char)*(6*32 + ));
+    char* stringHeader = (char*)malloc(sizeof(char)*(6*32 + 1024));
     return "";
 }
 int sizeInt(int nombre){
