@@ -67,7 +67,7 @@ int main(int argc, char* argv[]){
 		//data à envoyer
 		char data[7];
 		sprintf(cou,"coucou\0");
-		/*header h;
+        header h;/*
 		h.src_port=IntToBinary(ntohs(saddrCli.sin_port));
 		h.dest_port=IntToBinary(htons(argv[2]));
 		//premiere valeur =0, à chaque echange ajouter la taille des données envoyés (1ko->numseq=numseq+1024) (utilisé sizeof)	

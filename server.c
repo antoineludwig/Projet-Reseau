@@ -90,7 +90,7 @@ int main(int argc, char* argv[]){
 
 		printf("Envoi du message\n");
 		//envoi sur la socket de la structure, avec un pointeur sur la struct définie et la taille de la structure (obtenue par 		le sizeof ligne 112)
-		if(send(idSockCli,&header,taille_envoi,0)==-1)
+        if(send(idSockCli,&header,taille_envoi,0) == -1)
 		{
 			perror("send()");
 			exit(EXIT_FAILURE);

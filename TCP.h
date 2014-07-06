@@ -27,26 +27,26 @@ typedef struct {
 	int data;
 } header;
 
-int *IntToBinary(int i){
-	int a[20]; 
+int* IntToBinary(int i){
+    int* a = (int*)malloc(sizeof(int)*20);
 	int j=0;
-      	while(i>0) 
-      	{ 
+    while(i>0)
+    {
 		a[j]=i%2; 
 		j++; 
 		i=i/2;
-        }
-	return a;
+    }
+    return a;
 }
 
 int BinaryToInt(int n){
 	int decimal=0, i=0, rem;
 	while (n!=0)
    	{
-        	rem = n%10;
-        	n/=10;
-        	decimal += (int)rem*pow(2,i);
-        	++i;
-    	}
-    	return decimal;
+        rem = n%10;
+        n/=10;
+        decimal += (int)rem*pow(2,i);
+        ++i;
+    }
+    return decimal;
 }
