@@ -1,4 +1,6 @@
 #include "TCP.h"
+#include <stdio.h>
+#include <inttypes.h>
 
 int main(int argc, char* argv[]){
 //test entrées
@@ -55,20 +57,21 @@ int main(int argc, char* argv[]){
         if(send(socketd,&b,sizeof(int),0)<0){
             printf("errorcli\n");
         }*/
-        header *h = (header*)malloc(sizeof(header));
-        h->src_port = ntohs(saddrCli.sin_port);
-        h->dst_port = ntohs(atoi(argv[2]));
-        h->seq = ntohs(0);
-        h->ack = ntohs(h->seq)+1;
-        h->data_offset = ntohs(6);
-        h->flags = ntohs(0);
-        h->window_size = ntohs(1);
-        h->checksum = calculCheksum(h->src_port&h->dst_port,h->seq,h->ack,h->data_offset&h->flags&h->window_size,h->urgent_p,h->option,h->padding,h->data);
-        h->urgent_p = ntohs(0);
-        h->option = ntohs(0);
-        h->padding = ntohs(0);
-        h->data= ntohs(42);
-        if(send(socketd, h, sizeof(h), 0) < 0){
+        header h;
+       h.src_port = ntohs(saddrCli.sin_port);
+       h.dst_port = ntohs(atoi(argv[2]));
+       h.seq = ntohs(0);
+       h.ack = ntohs(h.seq)+1;
+       h.data_offset = ntohs(6);
+       h.flags = ntohs(0);
+       h.window_size = ntohs(1);
+       h.checksum = calculCheksum(h.src_port&h.dst_port,h.seq,h.ack,h.data_offset&h.flags&h.window_size,h.urgent_p,h.option,h.padding,h.data);
+       h.urgent_p = ntohs(0);
+       h.option = ntohs(0);
+       h.padding = ntohs(0);
+       h.data= ntohs(42);
+        printHeader(h);
+        if(send(socketd, &h, sizeof(h), 0) < 0){
             printf("errorcli\n");
         }
 

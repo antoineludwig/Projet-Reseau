@@ -1,4 +1,6 @@
 #include "TCP.h"
+#include <stdio.h>
+#include <inttypes.h>
 
 int main(int argc, char* argv[]){
 //test entrées
@@ -70,7 +72,8 @@ int main(int argc, char* argv[]){
                     printf("err=%d\n",rec);
                 }
                 else{
-                    printf("number=%d\n",h.data);
+                    //printf("number=%d\n",h.data);
+                    printHeader(h);
 
                 }
                 printf("Erreur : %s\n",strerror(errno));

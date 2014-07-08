@@ -1,4 +1,4 @@
 clear
-gcc -lm -o client.out client.c
-./client.out 127.0.0.1 12345
+gcc -lm -o clientInt.out clientInt.c
+./clientInt.out 127.0.0.1 12345
 

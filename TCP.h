@@ -29,6 +29,23 @@ typedef struct {
   uint32_t data;
 } header;
 
+void printHeader(header h){
+    printf("#### AFFICHAGE DU HEADER ####\n");
+    printf("src_port = %d\n", htons(h.src_port));
+    printf("dst_port = %d\n", htons(h.dst_port));
+    printf("seq = %d\n", htons(h.seq));
+    printf("ack = %d\n", htons(h.ack));
+    printf("data_offset = %d\n", htons(h.data_offset));
+    printf("flags = %d\n", htons(h.flags));
+    printf("window_size = %d\n", htons(h.window_size));
+    printf("checksum = %d\n", htons(h.checksum));
+    printf("urgent_p = %d\n", htons(h.urgent_p));
+    printf("option = %d\n", htons(h.option));
+    printf("padding = %d\n", htons(h.padding));
+    printf("data = %d\n", htons(h.data));
+    printf("#############################\n");
+}
+
 unsigned int IntToBinary(int i){
     unsigned int result = 0;
     int j=0;
@@ -92,3 +109,4 @@ int sizeInt(int nombre){
     }
     return taille;
 }
+
