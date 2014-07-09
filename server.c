@@ -61,22 +61,28 @@ int main(int argc, char* argv[]){
 			printf("connexion de %s, port %d\n",adresseIP,port);
 		//test reception
 			pid=fork();
-			int b=0;
+            //int b;
+            char* c = (char*)malloc(sizeof(char)*10);
 			int rec=0;
 			if(pid==0){
-				rec=recv(idSockCli,&b,sizeof(int),0);
+                //rec=recv(idSockCli,&b,sizeof(int),0);
+                rec=recv(idSockCli,&c,10*sizeof(char),0);
+
 				if(rec<0){
 					printf("err=%d\n",rec);
 				}
-				else
-					printf("b=%d\n",b);
-				printf("%s\n",strerror(errno));
+                else{
+                    //printf("b=%d\n",b);
+                    printf("b=%s\n",c);
+
+                }
+                printf("Erreur : %s\n",strerror(errno));
 			}
 			else if(pid==-1){
 				exit(-1);
 			}
 			else{
-				printf("Pere\n");
+                printf("Pere\n");
 			}
 		//fin du test
 
@@ -86,15 +92,23 @@ int main(int argc, char* argv[]){
 		printf("Envoi d'un message de taille %d\n",taille_envoi);
 
 		printf("Envoi de la taille du message au serveur\n");
-		send(idSockCli,&taille_envoi,taille_envoi,0);
+        send(idSockCli,&taille_envoi,taille_envoi,0);
 
+       /* if(send(idSockCli, header, sizeof(header), 0) == -1)
+        {
+            perror("send()");
+            exit(EXIT_FAILURE);
+        }*/
+        //int retour = send(idSockCli,&header,taille_envoi,0);
+
+        /*
 		printf("Envoi du message\n");
 		//envoi sur la socket de la structure, avec un pointeur sur la struct définie et la taille de la structure (obtenue par 		le sizeof ligne 112)
-        if(send(idSockCli,&header,taille_envoi,0) == -1)
+        if(retour == -1)
 		{
 			perror("send()");
 			exit(EXIT_FAILURE);
-		}
+        }*/
 		
 		}
 	}

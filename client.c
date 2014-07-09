@@ -55,21 +55,28 @@ int main(int argc, char* argv[]){
 		}
 
 	//test envoie de données
-		char cou[7];
-		int b=42;
-		if(send(socketd,&b,sizeof(int),0)<0){
-			printf("errorcli\n");
-		}
-/*		sprintf(cou,"coucou\0");
-		send(socketd,&cou,7*sizeof(char),0);*/
+        //char cou[7];
+       /* int b=42;
+        if(send(socketd,&b,sizeof(int),0)<0){
+            printf("errorcli\n");
+        }*/
+        char* c= (char*)malloc(sizeof(char)*10);
+        sprintf(c, "TOTO\0");
+        if(send(socketd,&c,5*sizeof(char),0)<0){
+            printf("errorcli\n");
+        }
+        //sprintf(cou,"coucou\0");
+        //send(socketd,&cou,7*sizeof(char),0);
 	//fin du test
 	//construction du header TCP
 		//data à envoyer
+        /*
 		char data[7];
-		sprintf(cou,"coucou\0");
-        header h;/*
-		h.src_port=IntToBinary(ntohs(saddrCli.sin_port));
-		h.dest_port=IntToBinary(htons(argv[2]));
+        sprintf(data,"coucou\0");
+        printf("Start header\n");
+        header h;
+        h.src_port=IntToBinary(ntohs(saddrCli.sin_port));
+        h.dest_port=IntToBinary(htons(atoi(argv[2])));
 		//premiere valeur =0, à chaque echange ajouter la taille des données envoyés (1ko->numseq=numseq+1024) (utilisé sizeof)	
 		h.seq_num=IntToBinary(0);
 		//ack =numseq+1
@@ -86,14 +93,15 @@ int main(int argc, char* argv[]){
 		h.urgent=IntToBinary(0);
 		h.option=IntToBinary(0);
 		h.padding=IntToBinary(0);
-		h.data=data;
+        h.data=convertTabtoString(data, 7);
 		//www.frameip.com/entete-tcp/
-*/
+        printf("Envoi au serveur : %s\n", data);
+        convertHeaderToBuffer(h, 1024);
 		if(send(socketd, &h, sizeof(header), 0)<0)
 		{
 			perror("send()");
 			exit(EXIT_FAILURE);
-		}
+        }*/
 		printf("Envoi de la requête terminé\n");
 
 		
