@@ -49,15 +49,44 @@ int main(int argc, char* argv[]){
                 printf("err=%d\n",rec);
             }
             else{
-                //printf("number=%d\n",h.data);
-                h.ack = ntohs(htons(h.ack) + 1);
-                printHeader(h);
-
-                //TODO réponse du serveur au client
-
-                /*if(send(socketd, &h, sizeof(h), 0) < 0){
-                    printf("errorcli\n");
-                }*/
+		//printf("RECEPTION SYN\n");
+                if(htons(h.flags_of)!=2){//reception de SYN
+                	printf("erreur : reception signal SYN\n");
+			close(idSockCli);
+                }
+		else{   
+			//printf("ENVOI ACK+SYN\n");            	
+			h.ack = ntohs(h.seq)+1;
+			h.flags_of = ntohs(18); //envoie ACK+SYN
+			if(send(socketd, &h, sizeof(h), 0) < 0){
+                		printf("erreur envoie signal SYN+ACK\n");
+				close(idSockCli);
+                	}
+			//printf("RECEPTION DATA\n");
+			//reception des données
+			rec=recv(idSockCli,&h,sizeof(header),0);
+			if(rec<0){
+				printf("err=%d\n",rec);
+				close(idSockCli);
+			}
+			else{
+				//printf("ENVOIE DATA REPONSE\n");
+				//envoie de la réponse
+				h.ack = ntohs(h.seq)+1;
+				h.data=ntohs(htons(h.data)+htons(h.data));
+				h.seq = h.seq+h.data;
+				if(send(socketd, &h, sizeof(h), 0) < 0){
+                			printf("erreur envoie de la réponse\n");
+					close(idSockCli);
+                		}
+				//printf("RECEPTION FIN\n");
+				//reception FIN
+				if(htons(h.flags_of)!=1){
+					printf("erreur : reception signal FIN\n");
+					close(idSockCli);
+				}
+			}
+		}                
 
             }
             printf("Erreur : %s\n",strerror(errno));
@@ -69,14 +98,6 @@ int main(int argc, char* argv[]){
             //Pere
         }
         //fin du test
-
-        //envoi de la structure complète (pas champ par champ)
-        int taille_envoi = sizeof(header);
-
-        printf("Envoi d'un message de taille %d\n",taille_envoi);
-
-        printf("Envoi de la taille du message au serveur\n");
-        send(idSockCli,&h,taille_envoi,0);
     }
 
     return 0;
