@@ -18,8 +18,7 @@ typedef struct {
   uint16_t dst_port;
   uint32_t seq;
   uint32_t ack;
-  uint8_t  data_offset;  // 4 bits
-  uint8_t  flags;
+  uint16_t  flags_of;//offset+flags
   uint16_t window_size;
   uint16_t checksum;
   uint16_t urgent_p;
@@ -35,8 +34,8 @@ void printHeader(header h){
     printf("dst_port = %d\n", htons(h.dst_port));
     printf("seq = %d\n", htons(h.seq));
     printf("ack = %d\n", htons(h.ack));
-    printf("data_offset = %d\n", htons(h.data_offset));
-    printf("flags = %d\n", htons(h.flags));
+    //printf("data_offset = %d\n", htons(h.data_offset));
+    printf("flags_of = %d\n", htons(h.flags_of));
     printf("window_size = %d\n", htons(h.window_size));
     printf("checksum = %d\n", htons(h.checksum));
     printf("urgent_p = %d\n", htons(h.urgent_p));
