@@ -11,10 +11,10 @@ int main(int argc, char* argv[]){
     else{
         printf("Lancement client\n");
 
-        int socketd;
+        int socketd, socketserv;
         struct sockaddr_in saddrCli, saddrServ;
         struct hostent* hid;
-
+	socklen_t saddrServLen;
         printf("Connexion serveur %s sur le port %s\n",argv[1],argv[2]);
 
         //lancement socket
@@ -23,6 +23,10 @@ int main(int argc, char* argv[]){
             printf("Erreur creation socket\n");
             exit(-1);
         }
+	//recup adresse serveur
+	saddrServLen=sizeof(saddrServ);
+	//acceptation connexion	
+	socketserv = accept(socketd,(struct sockaddr *)&saddrServ,&saddrServLen);
         //remplis de zero
         bzero(&saddrCli,sizeof(saddrCli));
         bzero(&saddrServ,sizeof(saddrServ));
@@ -57,23 +61,70 @@ int main(int argc, char* argv[]){
         if(send(socketd,&b,sizeof(int),0)<0){
             printf("errorcli\n");
         }*/
+//INITIALISATION DE LA CONNECTION
+//***envoie de SYN=1***
         header h;
-       h.src_port = ntohs(saddrCli.sin_port);
-       h.dst_port = ntohs(atoi(argv[2]));
-       h.seq = ntohs(0);
-       h.ack = ntohs(h.seq)+1;
-       h.data_offset = ntohs(6);
-       h.flags = ntohs(0);
-       h.window_size = ntohs(1);
-       h.checksum = calculCheksum(h.src_port&h.dst_port,h.seq,h.ack,h.data_offset&h.flags&h.window_size,h.urgent_p,h.option,h.padding,h.data);
-       h.urgent_p = ntohs(0);
-       h.option = ntohs(0);
-       h.padding = ntohs(0);
-       h.data= ntohs(42);
-        printHeader(h);
+	h.src_port = ntohs(saddrCli.sin_port);
+	h.dst_port = ntohs(atoi(argv[2]));
+	h.seq = ntohs(0);
+	h.ack = ntohs(h.seq)+1;
+	//h.data_offset = ntohs(6);
+	h.flags_of = ntohs(2);
+	h.window_size = ntohs(1);
+	h.checksum = calculCheksum(h.src_port&h.dst_port,h.seq,h.ack,h.flags_of&h.window_size,h.urgent_p,h.option,h.padding,h.data);
+	h.urgent_p = ntohs(0);
+	h.option = ntohs(0);
+	h.padding = ntohs(0);
+	h.data= ntohs(0);
+	printHeader(h);
+	printf("ENVOI SYN\n");
         if(send(socketd, &h, sizeof(h), 0) < 0){
             printf("errorcli\n");
         }
+	//***reception de SYN+ACK=1***
+	printf("RECEPTION SYN=1 et ACK=1\n");
+	int rec=recv(socketserv,&h,sizeof(header),0);
+            if(rec<0){
+                printf("err=%d\n",rec);
+            }
+            else{
+		printf("RECEPTION SYN=1 et ACK=1 \n");
+		if(htons(h.flags_of)!=18){//reception de SYN+ACK       	
+			printf("Erreur reception SYN+ACK\n");
+			close(socketd);
+		}
+		else{
+			printf("ENVOI DATA\n");
+			h.ack = ntohs(h.seq)+1;
+			h.flags_of = ntohs(16); //envoie ACK
+			h.data = ntohs(42); //envoie de données
+			h.seq = h.seq+h.data;
+			//***envoie des données avec SYN=0***
+			if(send(socketd, &h, sizeof(h), 0) < 0){
+				printf("erreur envoi données\n");
+				close(socketd);
+			}
+			printf("RECEPTION REPONSE DATA\n");
+			//***reception de la réponse***
+			rec=recv(socketserv,&h,sizeof(header),0);
+
+			    if(rec<0){
+				printf("err=%d\n",rec);
+			    }
+			    else{
+				printf("données reponse=%d\n",htons(h.data));
+				h.data = ntohs(0);				
+				h.flags_of = ntohs(1);
+				printf("ENVOI FIN\n");
+				//***envoie de FIN***
+				if(send(socketd, &h, sizeof(h), 0) < 0){
+				    	printf("erreur envoi FIN\n");
+					close(socketd);
+				}
+			    }
+
+		}
+	   }
 
         printf("Envoi de la requête terminé\n");
 
