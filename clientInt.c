@@ -11,10 +11,9 @@ int main(int argc, char* argv[]){
     else{
         printf("Lancement client\n");
 
-        int socketd, socketserv;
+        int socketd;
         struct sockaddr_in saddrCli, saddrServ;
         struct hostent* hid;
-	socklen_t saddrServLen;
         printf("Connexion serveur %s sur le port %s\n",argv[1],argv[2]);
 
         //lancement socket
@@ -23,10 +22,6 @@ int main(int argc, char* argv[]){
             printf("Erreur creation socket\n");
             exit(-1);
         }
-	//recup adresse serveur
-	saddrServLen=sizeof(saddrServ);
-	//acceptation connexion	
-	socketserv = accept(socketd,(struct sockaddr *)&saddrServ,&saddrServLen);
         //remplis de zero
         bzero(&saddrCli,sizeof(saddrCli));
         bzero(&saddrServ,sizeof(saddrServ));
@@ -42,7 +37,7 @@ int main(int argc, char* argv[]){
             exit(-1);
         }
         //défini la famille
-        saddrServ.sin_family=AF_INET;
+        saddrServ.sin_family=AF_INET;	
         //defini le port
         saddrServ.sin_port=htons(atoi(argv[2]));
         //recup IP au bon format
@@ -67,8 +62,7 @@ int main(int argc, char* argv[]){
 	h.src_port = ntohs(saddrCli.sin_port);
 	h.dst_port = ntohs(atoi(argv[2]));
 	h.seq = ntohs(0);
-	h.ack = ntohs(h.seq)+1;
-	//h.data_offset = ntohs(6);
+	h.ack = ntohs(h.seq)+ntohs(1);
 	h.flags_of = ntohs(2);
 	h.window_size = ntohs(1);
 	h.checksum = calculCheksum(h.src_port&h.dst_port,h.seq,h.ack,h.flags_of&h.window_size,h.urgent_p,h.option,h.padding,h.data);
@@ -82,23 +76,25 @@ int main(int argc, char* argv[]){
             printf("errorcli\n");
         }
 	//***reception de SYN+ACK=1***
-	printf("RECEPTION SYN=1 et ACK=1\n");
-	int rec=recv(socketserv,&h,sizeof(header),0);
+	printf("RECEPTION SYN=1 et ACK=1 passage 1\n");
+	int rec=0;
+	rec=recv(socketd,&h,sizeof(header),0);
             if(rec<0){
                 printf("err=%d\n",rec);
             }
             else{
-		printf("RECEPTION SYN=1 et ACK=1 \n");
+		printf("RECEPTION SYN=1 et ACK=1 passage 2\n");
 		if(htons(h.flags_of)!=18){//reception de SYN+ACK       	
 			printf("Erreur reception SYN+ACK\n");
 			close(socketd);
 		}
 		else{
 			printf("ENVOI DATA\n");
-			h.ack = ntohs(h.seq)+1;
+			h.ack = ntohs(htons(h.seq)+1);
 			h.flags_of = ntohs(16); //envoie ACK
 			h.data = ntohs(42); //envoie de données
 			h.seq = h.seq+h.data;
+			printHeader(h);
 			//***envoie des données avec SYN=0***
 			if(send(socketd, &h, sizeof(h), 0) < 0){
 				printf("erreur envoi données\n");
@@ -106,14 +102,17 @@ int main(int argc, char* argv[]){
 			}
 			printf("RECEPTION REPONSE DATA\n");
 			//***reception de la réponse***
-			rec=recv(socketserv,&h,sizeof(header),0);
+			rec=recv(socketd,&h,sizeof(header),0);
 
 			    if(rec<0){
 				printf("err=%d\n",rec);
 			    }
 			    else{
 				printf("données reponse=%d\n",htons(h.data));
-				h.data = ntohs(0);				
+				printHeader(h);
+				h.data = ntohs(0);
+				h.ack = ntohs(htons(h.seq)+1);
+				h.seq = h.seq+h.data;				
 				h.flags_of = ntohs(1);
 				printf("ENVOI FIN\n");
 				//***envoie de FIN***
