@@ -1,6 +1,17 @@
 #include "TCP.h"
 #include <stdio.h>
 #include <inttypes.h>
+#include <signal.h>
+#include <setjmp.h>
+
+sigjmp_buf contexteAlarme;
+
+void gestionAlarme(int numsig){
+	//signal(SIGALRM,SIG_IGN);
+	printf("TIME OUT\n");
+	//signal(SIGALRM,gestionAlarme);
+	longjmp(contexteAlarme,1);
+}
 
 int main(int argc, char* argv[]){
 //test entrées
@@ -50,12 +61,9 @@ int main(int argc, char* argv[]){
             printf("Erreur de connexion\n");
             exit(-1);
         }
+	
+	signal(SIGALRM,gestionAlarme);
 
-        //test envoie de données
-        /*int b=42;
-        if(send(socketd,&b,sizeof(int),0)<0){
-            printf("errorcli\n");
-        }*/
 //INITIALISATION DE LA CONNECTION
 //***envoie de SYN=1***
         header h;
@@ -78,7 +86,14 @@ int main(int argc, char* argv[]){
 	//***reception de SYN+ACK=1***
 	printf("RECEPTION SYN=1 et ACK=1 passage 1\n");
 	int rec=0;
-	rec=recv(socketd,&h,sizeof(header),0);
+	alarm(5);
+	if(setjmp(contexteAlarme)==1){
+	close(socketd);
+	}
+	else{
+		rec=recv(socketd,&h,sizeof(header),0);
+	}
+	alarm(0);
             if(rec<0){
                 printf("err=%d\n",rec);
             }
@@ -102,8 +117,13 @@ int main(int argc, char* argv[]){
 			}
 			printf("RECEPTION REPONSE DATA\n");
 			//***reception de la réponse***
-			rec=recv(socketd,&h,sizeof(header),0);
-
+			alarm(5);
+			if(setjmp(contexteAlarme)==1){
+				close(socketd);
+			}
+			else{
+				rec=recv(socketd,&h,sizeof(header),0);
+			}
 			    if(rec<0){
 				printf("err=%d\n",rec);
 			    }
