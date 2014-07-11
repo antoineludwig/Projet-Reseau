@@ -41,7 +41,6 @@ int main(int argc, char* argv[]){
         printClientInformation(saddrCli);
         //test reception
         pid=fork();
-
         if(pid==0){
             int rec=recv(idSockCli,&h,sizeof(header),0);
 
@@ -49,47 +48,54 @@ int main(int argc, char* argv[]){
                 printf("err=%d\n",rec);
             }
             else{
-		//printf("RECEPTION SYN\n");
+		printf("RECEPTION SYN\n");
                 if(htons(h.flags_of)!=2){//reception de SYN
                 	printf("erreur : reception signal SYN\n");
 			close(idSockCli);
                 }
 		else{   
-			//printf("ENVOI ACK+SYN\n");            	
-			h.ack = ntohs(h.seq)+1;
+			printf("ENVOI ACK+SYN\n");            	
+			h.ack = ntohs(htons(h.seq)+1);
 			h.flags_of = ntohs(18); //envoie ACK+SYN
-			if(send(socketd, &h, sizeof(h), 0) < 0){
+			if(send(idSockCli, &h, sizeof(header), 0) < 0){
                 		printf("erreur envoie signal SYN+ACK\n");
 				close(idSockCli);
                 	}
-			//printf("RECEPTION DATA\n");
+			printf("RECEPTION DATA\n");
 			//reception des données
 			rec=recv(idSockCli,&h,sizeof(header),0);
+			printHeader(h);
 			if(rec<0){
 				printf("err=%d\n",rec);
 				close(idSockCli);
 			}
 			else{
-				//printf("ENVOIE DATA REPONSE\n");
+				printf("ENVOIE DATA REPONSE\n");
 				//envoie de la réponse
-				h.ack = ntohs(h.seq)+1;
-				h.data=ntohs(htons(h.data)+htons(h.data));
+				h.ack = ntohs(htons(h.seq)+1);
+				h.data=ntohs(htons(h.data)+1);
 				h.seq = h.seq+h.data;
-				if(send(socketd, &h, sizeof(h), 0) < 0){
+				printHeader(h);
+				if(send(idSockCli, &h, sizeof(h), 0) < 0){
                 			printf("erreur envoie de la réponse\n");
 					close(idSockCli);
                 		}
-				//printf("RECEPTION FIN\n");
+				printf("RECEPTION FIN\n");
 				//reception FIN
-				if(htons(h.flags_of)!=1){
-					printf("erreur : reception signal FIN\n");
+				rec=recv(idSockCli,&h,sizeof(header),0);
+				if(rec<0){
+					printf("err=%d\n",rec);
 					close(idSockCli);
+				}else{
+					if(htons(h.flags_of)!=1){
+						printf("erreur : signal FIN non recu\n");
+						close(idSockCli);
+					}
 				}
 			}
 		}                
 
             }
-            printf("Erreur : %s\n",strerror(errno));
         }
         else if(pid==-1){
             exit(-1);
