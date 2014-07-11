@@ -1,6 +1,17 @@
 #include "TCP.h"
 #include <stdio.h>
 #include <inttypes.h>
+#include <signal.h>
+#include <setjmp.h>
+
+sigjmp_buf contexteAlarme;
+
+void gestionAlarme(int numsig){
+	//signal(SIGALRM,SIG_IGN);
+	printf("TIME OUT\n");
+	//signal(SIGALRM,gestionAlarme);
+	longjmp(contexteAlarme,1);
+}
 
 void checkParameters(int argc, char* argv[]);
 void checkBindSocket(int socketd, struct sockaddr_in saddr);
@@ -19,6 +30,7 @@ int main(int argc, char* argv[]){
     socklen_t saddrCliLen;
     pid_t pid;
     header h;
+    int rec=0;
     socketd=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
     if(socketd<0){
         printf("Erreur creation socket\n");
@@ -42,8 +54,14 @@ int main(int argc, char* argv[]){
         //test reception
         pid=fork();
         if(pid==0){
-            int rec=recv(idSockCli,&h,sizeof(header),0);
-
+	signal(SIGALRM,gestionAlarme);
+	alarm(5);
+	if(setjmp(contexteAlarme)==1){
+		close(idSockCli);
+	}
+	else{
+            rec=recv(idSockCli,&h,sizeof(header),0);
+	}
             if(rec<0){
                 printf("err=%d\n",rec);
             }
@@ -63,7 +81,13 @@ int main(int argc, char* argv[]){
                 	}
 			printf("RECEPTION DATA\n");
 			//reception des données
-			rec=recv(idSockCli,&h,sizeof(header),0);
+			alarm(5);
+			if(setjmp(contexteAlarme)==1){
+				close(idSockCli);
+			}
+			else{
+				rec=recv(idSockCli,&h,sizeof(header),0);
+			}
 			printHeader(h);
 			if(rec<0){
 				printf("err=%d\n",rec);
@@ -82,7 +106,13 @@ int main(int argc, char* argv[]){
                 		}
 				printf("RECEPTION FIN\n");
 				//reception FIN
-				rec=recv(idSockCli,&h,sizeof(header),0);
+				alarm(5);
+				if(setjmp(contexteAlarme)==1){
+					close(idSockCli);
+				}
+				else{
+					rec=recv(idSockCli,&h,sizeof(header),0);
+				}
 				if(rec<0){
 					printf("err=%d\n",rec);
 					close(idSockCli);
