@@ -1,4 +1,4 @@
 clear
-gcc -lm -o serverInt.out serverInt.c
-./serverInt.out 12345
+gcc -lm -o ./build/server.out ./src/server.c
+./build/server.out 12345
 
