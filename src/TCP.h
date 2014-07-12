@@ -13,22 +13,24 @@
 
 unsigned int convertTabtoInt(int[], int);
 
-typedef struct {
-  uint16_t src_port;
-  uint16_t dst_port;
-  uint32_t seq;
-  uint32_t ack;
-  uint16_t  flags_of;//offset+flags
-  uint16_t window_size;
-  uint16_t checksum;
-  uint16_t urgent_p;
-  uint16_t option;
-  uint16_t padding;
+typedef struct
+{
+    uint16_t src_port;
+    uint16_t dst_port;
+    uint32_t seq;
+    uint32_t ack;
+    uint16_t  flags_of;//offset+flags
+    uint16_t window_size;
+    uint16_t checksum;
+    uint16_t urgent_p;
+    uint16_t option;
+    uint16_t padding;
 
-  uint32_t data;
+    uint32_t data;
 } header;
 
-void printHeader(header h){
+void printHeader(header h)
+{
     printf("#### AFFICHAGE DU HEADER ####\n");
     printf("src_port = %d\n", htons(h.src_port));
     printf("dst_port = %d\n", htons(h.dst_port));
