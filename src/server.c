@@ -11,7 +11,7 @@ void checkParameters(int argc, char* argv[]);
 void checkBindSocket(int socketd, struct sockaddr_in saddr);
 void checkListenSocket(int socketd);
 struct sockaddr_in initServerAdress(struct sockaddr_in saddr, int port);
-int acceptClient(int* idSockCli, int socketd, struct sockaddr_in saddrCli, socklen_t saddrCliLen);
+void acceptClient(int* idSockCli, int socketd, struct sockaddr_in saddrCli, socklen_t saddrCliLen);
 void printClientInformation(struct sockaddr_in saddrCli);
 int reception(int idSockCli, header h, int* rec, int closeIDSockCli);
 void checkSignalFin(header h, int idSockCli);
@@ -57,7 +57,6 @@ int main(int argc, char* argv[])
         {
             signal(SIGALRM,gestionAlarme);
             alarm(5);
-            ;
             if(reception(idSockCli, h, &rec, 0) != -1)
             {
                 printf("RECEPTION SYN\n");
@@ -146,7 +145,7 @@ void checkListenSocket(int socketd)
     }
 }
 
-int acceptClient(int* idSockCli, int socketd, struct sockaddr_in saddrCli, socklen_t saddrCliLen)
+void acceptClient(int* idSockCli, int socketd, struct sockaddr_in saddrCli, socklen_t saddrCliLen)
 {
     *idSockCli = accept(socketd,(struct sockaddr *)&saddrCli,&saddrCliLen);
     if(*idSockCli < 0)
@@ -184,9 +183,9 @@ int reception(int idSockCli, header h, int* rec, int closeIDSockCli)
     {
         *rec=recv(idSockCli,&h,sizeof(header),0);
     }
-    if(rec<0)
+    if(*rec < 0)
     {
-        printf("err=%d\n",rec);
+        printf("err=%d\n", *rec);
         if(closeIDSockCli == 1)
         {
             close(idSockCli);
@@ -195,7 +194,6 @@ int reception(int idSockCli, header h, int* rec, int closeIDSockCli)
     }
 
     return 0;
-
 }
 
 void checkSignalFin(header h, int idSockCli)
